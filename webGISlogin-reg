@@ -24,8 +24,8 @@ app.use(express.static(localdir));
 // 创建数据库连接
 var connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: '12100',
+    user: '',
+    password: '',
     database: 'webGISdatabase'
 });
 
