@@ -1,0 +1,325 @@
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+body, html {
+    height: 100%;
+}
+
+.container-fluid {
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+.carect {
+    position: relative;
+    width: 0;
+    height: 0;
+    margin-left: 5px;
+    margin-bottom: 2px;
+    border-top: 6px solid;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+nav {
+    width: 100%;
+    height: 60px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-shadow: 0 2px 4px #ccc;
+    box-shadow: 0 2px 4px #ccc;
+    margin:0 auto;
+    padding: 18px 0;
+}
+
+nav .nav-logo {
+    width: auto;
+    height: 100%;
+    margin-left: 20px;
+    float: left;
+    display: flex;
+}
+
+nav .nav-logo li {
+    font-size: 16px;
+    font-weight: bold;
+    list-style: none;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+nav div ul {
+    display: flex;
+}
+
+nav div ul li div {
+    cursor: pointer;
+}
+
+#amap {
+    height: 600px;
+}
+#description {
+    height: 370px;
+    resize: none ;
+}
+.main {
+    width: 80%;
+    margin: 2% auto;
+}
+
+#main-write,#main-inbox,#main-contacts,#main-subVoting,main-write {
+    display: none;
+}
+
+.close{
+    font-size: 30px
+}
+
+.layui-btn {
+    display: inline-block;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 18px;
+    background-color: #094fb7;
+    color: #fff;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer
+}
+
+.layui-btn:hover {
+    opacity: .8;
+    color: #fff
+}
+
+.btn-page {
+    display: inline-block;
+    margin: 5px 5px;
+    padding: 5px, 5px;
+    width: 30px;
+    height: 30px;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer
+}
+
+.btn-page:hover {
+    border: 1px solid;
+}
+
+
+.layui-elem-field {
+    margin-bottom: 10px;
+    padding: 0;
+    border-width: 1px;
+    border-style: solid
+}
+
+.layui-elem-field legend {
+    width: 100px;
+    margin-left: 20px;
+    padding: 0 10px;
+    font-size: 20px;
+    font-weight: 300;
+    border:none;
+}
+
+.layui-field-title {
+    margin: 50px 0 20px;
+    border-width: 1px 0 0
+}
+
+.layui-card {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-radius: 2px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.05)
+}
+
+.layui-card:last-child {
+    margin-bottom: 0
+}
+
+.layui-card-header {
+    position: relative;
+    height: 42px;
+    line-height: 42px;
+    padding: 0 15px;
+    border-bottom: 1px solid #f6f6f6;
+    color: #333;
+    border-radius: 2px 2px 0 0;
+    font-size: 14px
+}
+.layui-card-body {
+    position: relative;
+    padding: 10px 15px;
+    line-height: 24px;
+    overflow:hidden;
+}
+
+
+#discuss, #discuss-datas {
+    /*    width: 990px;
+*/ margin: 0 auto;
+}
+
+#discuss div.mt {
+    /* ߶ , ߿ ,    */
+    height: 30px;
+    border: 1px solid #DDDDDD;
+    border-top: 2px solid #999999;
+    background: #f7f7f7;
+}
+
+#discuss-content {
+    border-bottom: 1px solid #DDDDDD;
+}
+
+#discuss-datas tr.header td {
+    /* Ӵ       ڱ߾   ±߿ */
+    font-size: 16px;
+    font-weight: bold;
+    padding: 20px 50px 10px 50px;
+    border-bottom: 1px solid #DDDDDD;
+    color: #666666;
+}
+
+#discuss-datas td {
+    /*    ˮƽ   ж   */
+    text-align: center;
+}
+
+#discuss-datas td.col1 {
+    /*    , ı      */
+    width:600px;
+    padding: 0px 0px 0px 0px;
+    text-align: left;
+}
+
+@media (max-width: 1200px) {
+    #discuss-datas tr.header td {
+        /* Ӵ       ڱ߾   ±߿ */
+        font-size: 16px;
+        font-weight: bold;
+        padding: 20px 0px 20px 0px;
+        border-bottom: 1px solid #DDDDDD;
+        color: #666666;
+    }
+}
+
+#discuss a {
+    /*        ɫ ȥ   »   */
+    text-decoration: none;
+    color: #005aa0;
+}
+
+#discuss a:hover {
+    text-decoration: underline;
+}
+
+#discuss-datas tbody td {
+    /* ı   ɫ      ڱ߾   ±߿ */
+    color: #9c9c9c;
+    padding: 20px 0px 20px 0px;
+    border-bottom: 1px dotted #DDDDDD;
+}
+/*    ̳   ݼӱ ǩ   ͼ  */
+#discuss i {
+    /*   ڱ߾     ڱ߾ ߶      ͼ*/
+    padding-left: 21px;
+    padding-bottom: 5px;
+    background: url(img/c63802c9ee7e4ddec0e53e152e665ea.png) no-repeat;
+    background-size: 100%;
+}
+
+#discuss div.mt a {
+    float: left;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+}
+
+#discuss div.mt a:hover {
+    text-decoration: none;
+    color: #E4393C;
+}
+
+#discuss div.mt a.current {
+    border: 1px solid #DDDDDD;
+    border-top: 2px solid #E4393C;
+    border-bottom: 0;
+    background: #ffffff;
+    margin-top: -6px;
+    height: 35px;
+    line-height: 35px;
+    color: #E4393C;
+}
+
+.titleblock {
+    float: left;
+    border: 1px solid #d3dedb;
+    box-shadow: 0 0 5px -3px #000;
+    border: 1px solid #f5faf9;
+    -moz-border-radius: 0.25em;
+    border-radius: 2.5px;
+    padding: 0 0.4em 0 0.4em;
+    display: block;
+    line-height: 2.857em;
+    margin-right: 0.6em;
+    margin-bottom: 8px;
+    background-color: white;
+}
+
+.clickfont{
+    font-size: 18px;
+}
+
+.clickfont:hover{
+    color: cornflowerblue;
+    text-decoration: underline;
+    font-style:italic;
+}
+
+.btn btn-primary {
+    width: 100%;
+}
+
+.btn-thumb {
+    display: inline-block;
+    height: 36px;
+    line-height: 30px;
+    padding: 0 8px;
+    background-color: white;
+    color: black;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 12px;
+    box-shadow: 0 0 5px -3px #000;
+    border: 1px solid #f5faf9;
+    -moz-border-radius: 0.25em;
+    border-radius: 2.5px;
+    cursor: pointer
+}
+
+    .btn-thumb:hover {
+        opacity: .8;
+        color: #094fb7
+    }
+    .btn-thumb:focus {
+        background-color: #094fb7;
+        color:white;
+    }

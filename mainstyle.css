@@ -1,0 +1,157 @@
+
+
+.container {
+    height: 100vh;
+    align-items: stretch; /* 垂直方向拉伸 */
+    width: 100vh;
+}
+
+/* 调整侧边栏样式 */
+.sidebar {
+    width: 20%;
+    background-color: #f0f0f0;
+    overflow-y: scroll;
+    padding-top: 20px;
+}
+
+.webGIS-item {
+    border-bottom: 1px solid #cccccc;
+    padding: 10px;
+    cursor: pointer; /* 鼠标悬停样式 */
+    transition: background-color 0.3s ease; /* 平滑过渡效果 */
+}
+
+.webGIS-item:hover {
+    background-color: #4AA080;
+}
+
+.webGIS-item .sender {
+    font-weight: bold;
+}
+
+.main {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 20px;
+    overflow-y: scroll;
+    border: 1px solid #cccccc;
+}
+
+.main h1 {
+    margin-top: 0;
+}
+
+.email-form {
+    margin-top: 20px;
+}
+
+.email-form input,
+.email-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    margin-bottom: 10px;
+}
+
+.email-form button {
+    padding: 10px;
+    background-color: #0099ff;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.email-form button:hover {
+    background-color: #0077cc;
+}
+
+textarea {
+    resize: vertical;
+    height: 60%;
+    font-size: 20px;
+}
+
+.active {
+    background-color: #4AA080;
+}
+
+#left-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #f2f2f2;
+    padding: 10px;
+    z-index: 1; 
+}
+
+#searchbox {
+    margin-bottom: 10px;
+}
+
+#sole-input {
+    width: 200px;
+}
+
+#searchbutton {
+    width: 40px;
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+#form-col-md-4 {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.col-md-4 div {
+    background-color: rgb(255, 255, 255);
+    flex: 1;
+}
+
+#addData {
+    display: block;
+}
+
+#map {
+    height: 100vh;
+}
+
+#addDataButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 30px;
+    background-color: #337ab7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.cross {
+    width: 20px;
+    height: 4px;
+    background-color: white;
+    transform-origin: center;
+    transform: transform 0.3 ease;
+}
+
+#addDataButton.clicked {
+    background-color: rgb(240, 16, 16);
+}
+
+#addDataButton.clicked .cross{
+    transform: rotate(45deg);
+}
+
+.fixed-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}

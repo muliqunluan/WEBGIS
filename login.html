@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <title>登录</title>
+</head>
+
+<body>
+    <div class="modal" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="btn-info modal-header" style="background-color: #397fd7">
+                    <h4>用户登录</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal loginForm" action="/login" method="post">
+                        <div class="form-group">
+                            <label class="col-sm-2 col-xs-3 control-label" for="userIdInput">用户名</label>
+                            <div class="col-sm-8 col-xs-8">
+                                <input type="text" class="form-control" id="userIdInput" name="username" placeholder="请输入用户名" required />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-xs-3 control-label" for="passwordInput">密码</label>
+                            <div class="col-sm-8 col-xs-8">
+                                <input type="password" class="form-control" id="passwordInput" name="password" placeholder="请输入密码"  required/>
+                            </div>
+                        </div>
+                        <button type="submit" id="hiddenSubmitBtn" style="display: none;"></button>
+                    </form>
+                </div>
+                <div class="modal-footer" style="display: flex;justify-content: center;">
+                    <button type="submit" class="btn btn-primary btn-block" id="externalSubmitBtn">登录</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='./reg.html' ">注册</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var externalSubmitBtn = document.getElementById('externalSubmitBtn');
+    var hiddenSubmitBtn = document.getElementById('hiddenSubmitBtn');
+    externalSubmitBtn.addEventListener('click', function() {
+        hiddenSubmitBtn.click();
+    });
+</script>
+</html>

@@ -1,0 +1,379 @@
+var express = require('express');
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var mysql = require('mysql');
+var ejs = require('ejs');
+var app = express();
+
+app.set('view engine', 'ejs');
+
+// 配置会话
+app.use(session({
+    secret:'secret-key-4790',
+    resave: true,
+    saveUninitialized: true
+}));
+
+// 配置 body-parser
+app.use(bodyParser.urlencoded({ extended: true }));
+localdir = "D:\\myweb\\webGIS"
+
+// 配置静态文件目录
+app.use(express.static(localdir));
+
+// 创建数据库连接
+var connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '12100',
+    database: 'webGISdatabase'
+});
+
+// 连接数据库
+connection.connect(function(err) {
+    if (err) {
+        console.log('[错误]' + err);
+    } else {
+        console.log('数据库连接成功');
+    }
+  });
+
+// 登录路由
+app.post('/login', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    
+    // 查询用户信息
+    var query = 'SELECT * FROM users WHERE username = ?';
+    connection.query(query, [username], function(err, result) {
+      if (err) {
+        console.log('[错误]' + err);
+        res.send('登录失败');
+      } else {
+        if (result.length > 0 && result[0].password === password) {
+          req.session.username = username;  // 将用户名存储在会话中
+          console.log(req.session.username);
+          res.redirect('/main')
+        } else {
+          res.send('用户名或密码错误');
+          console.log(req.body);
+        }
+      }
+    });
+  });
+  
+app.post('/reg', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+  
+    // 检查是否存在相同的记录
+    var checkQuery = 'SELECT COUNT(*) AS count FROM users WHERE username = ?';
+    connection.query(checkQuery, [username], function(err, result) {
+      if (err) {
+        console.log('[错误]' + err);
+        res.send('注册失败query');
+      } else {
+        var count = result[0].count;
+        if (count > 0) {
+          // 存在相同的记录，注册失败
+          res.send('注册失败，账号已存在');
+        } else {
+          // 不存在相同的记录，插入新用户信息
+          var insertQuery = 'INSERT INTO users (username, password) VALUES (?, ?)';
+          connection.query(insertQuery, [username, password], function(err, result) {
+            if (err) {
+              console.log('[错误]' + err);
+              console.log(req.body)
+              res.send('注册失败');
+            } else {
+              res.send('注册成功');
+            }
+          });
+        }
+      }
+    });
+  });
+
+// 使用body-parser中间件解析请求体
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// 向数据库添加数据
+app.post('/data', function(req, res) {
+  var support = req.body.support;
+  var need = req.body.need;
+  var description = req.body.description;
+  var username = req.session.username;
+  var lon = req.body.lon;
+  var lat = req.body.lat;
+  // 处理空字符串为 NULL 值
+  const lonValue = lon !== '' ? parseFloat(lon) : null;
+  const latValue = lat !== '' ? parseFloat(lat) : null;
+
+  var checkQuery = 'SELECT COUNT(*) AS count FROM sdinfo WHERE support = ? AND need = ? AND username = ?'
+  connection.query(checkQuery, [support, need, username], function(err, result) {
+    if (err) {
+      console.log('[checkQuery错误]' + err)
+      res.json({"message":"checkQuery错误"})
+    }
+    else {
+      var count = result[0].count;
+      if (count > 0) {
+        res.json({"message":"相关信息已经存在"})
+      }
+      else {
+        var insertQuery = 'INSERT INTO sdinfo (support, need, description, username, lon, lat) VALUES (?, ?, ?, ?, ?, ?)';
+        connection.query(insertQuery, [support, need, description,username, lonValue, latValue], function(err, result) {
+          if (err) {
+            console.log('[insertQuery错误]' + err);
+            res.json({"message":"错误"});
+            console.log(req.body);
+            console.log("?")
+          } else {
+            console.log(username + '提供' + support + '需要' + need )
+            res.json({"message":"成功添加数据"})
+          }
+        })
+      }
+    }
+  })
+})
+//发送message
+app.post('/message', function(req, res) {
+  var from = req.session.username;
+  var to = req.body.to;
+  var message = req.body.message;
+  var checkQuery = 'SELECT COUNT(*) AS count FROM users WHERE username = ?'
+  connection.query(checkQuery, [to], function(err, result) {
+    if (err) {
+      console.log('[checkQuery错误]' + err)
+      res.json({"message":"checkQuery错误"})      
+    } else {
+      var count = result[0].count;
+      if (count == 0) {
+        res.json({"message":"不存在此用户"})
+      } else {
+        var insertQuery = 'INSERT INTO messages (sender, receiver, content) VALUES (?, ?, ?)';
+        connection.query(insertQuery, [from, to, message], function(err, result){
+          if (err) {
+            console.log('[insertQuery错误]' + err);
+            res.json({"message":"错误"});
+            console.log(req.body);
+          }else {
+            console.log(from + '发送了' + message + '给' + to )
+            res.json({"message":"成功发送信息"})
+          }
+        })
+
+      }
+    }
+  })
+})
+
+function requireLogin(req, res, next) {
+  if (req.session.username) { // 检查用户是否已经登录
+    next();
+  } else {
+    console.log('检查到用户没有登录')
+    res.redirect('/login.html'); // 重定向到登录页面
+  }
+}
+
+app.get('/main',requireLogin , function(req, res) {
+  res.sendFile('main.html',{ root:localdir})
+})
+
+app.get('/', function(req, res) {
+  res.redirect('/login.html');
+})
+
+app.get('/logout', function (req, res) {
+  req.session.destroy(function () {
+    res.redirect('/');
+  });
+});
+
+app.get('/search', function(req, res) {
+  var word = req.query.word;
+  var f_word = '%'+word+'%'
+  var query = 'SELECT * FROM sdinfo WHERE support LIKE ? OR need LIKE ? OR description LIKE ?';
+  connection.query(query, [f_word, f_word, f_word], function(err, result) {
+    if (err) {
+      console.log('[错误]' + err);
+      res.send('<script>alert("错误");window.location.href = "/main"</script>');
+    } 
+    else {
+      if (result.length > 0) {
+        res.json(result);
+      }
+      else {
+        console.log(result);
+        res.send('<script>alert("没有结果");window.location.href = "/main"</script>');
+      }
+    }
+  })
+})
+
+app.get('/inbox', function(req, res) {
+  var query = 'SELECT * FROM messages WHERE receiver LIKE ?';
+  connection.query(query,[req.session.username], function(err, result){
+    if (err) {
+      console.log('[错误]' + err);
+      res.send('<script>alert("错误");window.location.href = "/main"</script>');
+    } else {
+      if (result.length > 0) {
+        res.json(result);
+      } else {
+        console.log(result);
+        res.send('<script>alert("没有结果");window.location.href = "/main"</script>');
+      }
+    }
+  })
+})
+//添加投票主题
+app.post('/subVoting', function(req, res){
+  var votingTheme = req.body.votingTheme;
+  var option1 = req.body.option1;
+  var option2 = req.body.option2;
+  var option3 = req.body.option3;
+  var option4 = req.body.option4;
+  var option5 = req.body.option5;
+  var insertQuery = 'INSERT INTO voting_topics (voting_theme_name, option1, option2, option3, option4 ,option5) VALUES (?, ?, ?, ?, ?, ?)';
+  connection.query(insertQuery, [votingTheme, option1, option2, option3, option4, option5], function(err, result){
+    if(err){
+      console.log('[insertQuery错误]'+ err);
+      res.json({"message":"错误"});
+      console.log(req.body);
+    } else {
+      res.json({"message":"成功发起投票"})
+    }
+  })
+})
+// 发帖
+app.post('/addPost', function(req, res){
+  var post_subject = req.body.post_subject;
+  var post_content = req.body.post_content;
+  var post_author = req.session.username;
+  var insertQuery = 'INSERT INTO posts (post_subject, post_content, post_author) VALUES (?, ?, ?)';
+  connection.query(insertQuery, [post_subject, post_content, post_author], function(err){
+    if(err){
+      console.log('[insertQuery错误]'+ err);
+      res.json({"message":"错误"});
+      console.log(post_subject+"!!!");
+      console.log(req.body);
+    } else {
+      res.json({"message":"成功发帖"});
+    }
+  });
+})
+// 显示帖子
+app.get('/post', (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 20;
+  const offset = (page - 1) * pageSize;
+  const countQuery = 'SELECT COUNT(*) AS total FROM posts';
+  const query = 'SELECT * FROM posts LIMIT ? OFFSET ?';
+
+  connection.query(countQuery, (error, pageresults) => {
+    if (error) {
+      console.error('Error querying records count:', error);
+      return res.status(500).json({ error: 'An error occurred while querying the records count.' });
+    }
+
+    const totalRecords = pageresults[0].total;
+    const totalPages = Math.ceil(totalRecords / pageSize);
+
+    connection.query(query, [pageSize, offset], (error, postresults) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      res.json({
+        totalPages: totalPages,
+        posts: postresults
+      });
+    });
+  });
+});
+// 处理获取帖子信息的路由
+app.get('/post/:postId', requireLogin, function(req, res) {
+  const postId = req.params.postId;
+
+  // 从数据库中查询帖子信息
+
+    const query = 'SELECT * FROM posts WHERE post_id = ?';
+    connection.query(query, [postId], function(err, results) {
+
+      if (err) {
+        console.error('Error executing database query:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+
+      if (results.length === 0) {
+        res.status(404).json({ error: 'Post not found' });
+        return;
+      }
+
+      const post = results[0];
+
+      // 返回帖子信息作为 JSON 数据
+      res.render('post',{post:post});
+    });
+});
+//显示回复
+app.get('/reply', (req, res)=>{
+  const page = parseInt(req.query.page) || 1;
+  const postId = req.query.postId;
+  const pageSize = 20;
+  const offset = (page - 1) * pageSize;
+  const countQuery = 'SELECT COUNT(*) AS total FROM replies';
+  const query = 'SELECT * FROM replies WHERE post_id = ? LIMIT ? OFFSET ?';
+
+  connection.query(countQuery, (error, pageresults) => {
+    if (error) {
+      console.error('Error querying records count:', error);
+      return res.status(500).json({ error: 'An error occurred while querying the records count.' });
+    }
+
+    const totalRecords = pageresults[0].total;
+    const totalPages = Math.ceil(totalRecords / pageSize);
+
+    connection.query(query, [postId, pageSize, offset], (error, replyresults) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      res.json({
+        totalPages: totalPages,
+        replies: replyresults
+      });
+    });
+  });
+})
+// 添加回复
+app.post('/addreply', requireLogin, function(req, res){
+  var postId = req.body.postId;
+  var content = req.body.content;
+  var username = req.session.username;
+  var insertQuery ='INSERT INTO replies (post_id, username, content)VALUES(?, ?, ?)';
+  connection.query(insertQuery, [postId, username, content], function(err)
+  {
+    if(err){
+      console.log('[insertQuery错误]'+ err);
+      res.json({"message":"错误"});
+      console.log(req.body);
+    } else {
+      res.json({"message":"成功回复"});
+    }
+  });
+  
+})
+// 监听端口
+app.listen(3001, function() {
+    console.log('服务器已启动，运行在\\localhost:3001');
+  });
+
+

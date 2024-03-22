@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>湖科大树洞</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="mainstyle.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+
+</head>
+
+<body>
+  <div class="container-fluid" style="margin:0px">
+    <!--导航栏-->
+    <nav>
+      <div class="nav-logo">
+        <li id="posts">
+          发布帖子
+        </li>
+        <li>/</li>
+        <li id="hnkd">
+          空间信息提交与查询
+        </li>
+      </div>
+      <div>
+        <ul class="dropdown">
+          <li class="dropdown">
+            <div class="dropdown-toggle" data-toggle="dropdown">更多功能<b class="caret"></b></div>
+            <ul class="dropdown-menu">
+              <li class="webGIS-item" id="write">
+                --写信--
+              </li>
+              <li class="webGIS-item" id="inbox">
+                收件箱
+              </li>
+              <li class="webGIS-item" id="contacts">
+                联系人（未实现）
+              </li>
+              <li class="webGIS-item" id="subVoting">
+                发起投票（未实现）
+              </li>
+              <li class="webGIS-item" id="votings">
+                正在进行的投票
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!--信息发布与查询以及地图-->
+    <div class="main" id="main-hnkd">
+      <div id="mask" class="row">
+        <div class="col-md-12">
+          <div id="searchbox">
+            <form method="get" action="/search" id="search-form">
+              <input type="text" name="word" id="sole-input" placeholder="查询">
+              <input type="submit" id="searchbutton">
+              <div class="col-md-12" id="addDataButton" onclick="rotateButton()">
+                <div class="cross"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div display=“block” class="col-md-6" id="amap"></div>
+        <div class="col-md-6">
+          <form class="col" id="addData" method="post" action="/data">
+            <div class="form-group"><input type="text" class="form-control" name="support" id="support"
+                placeholder="供应">
+            </div>
+            <div class="form-group"><input type="text" class="form-control" name="need" id="need" placeholder="需求">
+            </div>
+            <div class="form-group"><textarea type="text" class="form-control" name="description" id="description"
+                placeholder="描述"></textarea></div>
+            <div class="form-group"><input type="number" class="form-control" name="lon" id="lon"
+                placeholder="当前经度(未实装)">
+            </div>
+            <div class="form-group"><input type="number" class="form-control" name="lat" id="lat"
+                placeholder="当前纬度(未实装)">
+            </div>
+            <div class="form-group"><button class="btn btn-primary" type="submit" name="add">添加
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="info">
+          <h4>获取地图级别与中心点坐标</h4>
+          <p>当前级别：<span id="map-zoom"></span></p>
+          <p>当前中心点：<span id="map-center"></span></p>
+          <p>搜索结果：</p>
+          <div id="searchResults" class="list-group"></div>
+        </div>
+      </div>
+    </div>
+    <!--写信-->
+    <div class="main" id="main-write">
+      <h1>写一封电子邮件</h1>
+      <form class="email-form" id="email-form">
+        <input type="text" name="to" id="to" placeholder="To">
+        <textarea name="message" id="message" placeholder="Message"></textarea>
+        <button type="submit" id="submessage">Send</button>
+      </form>
+    </div>
+    <div class="main" id="main-inbox">
+      <div id="inboxTable" class="list-group"></div>
+    </div>
+    <div class="main" id="main-contacts"></div>
+    <!--发布投票-->
+    <div class="main" id="main-subVoting">
+      <div>
+        <form id="votingForm">
+          <div class="form-group">
+            <label for="votingTheme">投票主题</label>
+            <input type="text" class="form-control" id="votingTheme" required>
+          </div>
+          <div class="form-group">
+            <label for="option1">选项1</label>
+            <input type="text" class="form-control" id="option1" required>
+          </div>
+          <div class="form-group">
+            <label for="option2">选项2</label>
+            <input type="text" class="form-control" id="option2" required>
+          </div>
+          <div class="form-group">
+            <label for="option3">选项3</label>
+            <input type="text" class="form-control" id="option3">
+          </div>
+          <div class="form-group">
+            <label for="option4">选项4</label>
+            <input type="text" class="form-control" id="option4">
+          </div>
+          <div class="form-group">
+            <label for="option5">选项5</label>
+            <input type="text" class="form-control" id="option5">
+          </div>
+          <button type="submit" class="btn btn-success" id="publishBtn" disabled>发布</button>
+        </form>
+      </div>
+    </div>
+    <!--查看与发布帖子-->
+    <div class="main" id="main-posts">
+
+      <a href="" class="btn btn-primary fixed-button" data-toggle="modal" data-target="#newPostModal"
+        style="font-size: 16px;">[发布新帖子]</a>
+      <div id="discuss-content">
+        <table id="discuss-datas">
+
+        </table>
+        <div id=paginationContainer></div>
+      </div>
+      <!--发帖对话框-->
+      <div class="modal fade" id="newPostModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" style="width: 80%">
+          <div class="modal-content">
+            <div class="btn-info modal-header" style="background-color: #397fd7">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4>发布帖子</h4>
+            </div>
+            <form class="modal-body" id="addPost">
+              <div class="layui-card-header">
+                <input type="text" name="post-subject" id="post-subject" placeholder="请输入标题"
+                  class="form-control">
+              </div>
+              <div class="layui-card-body" style="height: 200px;">
+                <div>
+                  <textarea type="text" name="post-content" id="post-content" placeholder="请输入内容" class="form-control"
+                    style="width: 100%;height: 100px;resize: none;margin-bottom: 20px;margin-top: 20px;"
+                    required></textarea>
+                </div>
+                <div style="display: flex;">
+                  <button type="submit" id="subPost" class="btn btn-primary btn-block"
+                    style="width: 40%;margin: 0px auto;">发送</button>
+                  <button type="button" data-dismiss="modal" class="btn btn-block"
+                    style="width: 40%;margin: 0px auto;">取消</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--正在进行的投票-->
+    <div class="main" id="main-votings">
+      <div id="voting-content">
+        <table id="voting-datas">
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td>555</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!--<script src="js/amapSecurity.js"></script>-->
+    <!--<script src="https://webapi.amap.com/loader.js"></script>-->
+    <!--<script src="js/mapAPI.js"></script>-->
+    <script src="js/jquery-3.7.1.js"></script>
+    <!--搜索-->
+    <script src="js/search.js"></script>
+    <!--添加数据-->
+    <script src="js/addData.js"></script>
+    <script src="js/amapButton.js"></script>
+    <!--功能选择-->
+    <script src="js/swithchTab.js"></script>
+    <!--发送消息-->
+    <script src="js/addMsg.js"></script>
+    <!--收件箱-->
+    <script src="js/inbox.js"></script>
+    <!--提交投票检查-->
+    <script src="js/subVoting.js"></script>
+    <!--添加投票-->
+    <script src="js/addVoting.js"></script>
+    <!--添加帖子-->
+    <script src="js/addPost.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!--展示帖子-->
+    <script src="js/showPosts.js"></script>
+    <!--展示当前正在进行的投票-->
+    <script src="js/showVoting.js"></script>
+</body>
+
+
+</html>
