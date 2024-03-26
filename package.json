@@ -5,6 +5,7 @@
     "element-ui": "^2.15.14",
     "express": "^4.18.3",
     "express-session": "^1.18.0",
+    "mescroll.js": "^1.4.2",
     "mysql": "^2.18.1"
   }
 }

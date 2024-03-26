@@ -24,8 +24,8 @@ app.use(express.static(localdir));
 // 创建数据库连接
 var connection = mysql.createConnection({
     host: 'localhost',
-    user: '',
-    password: '',
+    user: 'root',
+    password: '12100',
     database: 'webGISdatabase'
 });
 
@@ -231,24 +231,77 @@ app.get('/inbox', function(req, res) {
   })
 })
 //添加投票主题
-app.post('/subVoting', function(req, res){
+app.post('/subVoting', function(req, res) {
   var votingTheme = req.body.votingTheme;
-  var option1 = req.body.option1;
-  var option2 = req.body.option2;
-  var option3 = req.body.option3;
-  var option4 = req.body.option4;
-  var option5 = req.body.option5;
-  var insertQuery = 'INSERT INTO voting_topics (voting_theme_name, option1, option2, option3, option4 ,option5) VALUES (?, ?, ?, ?, ?, ?)';
-  connection.query(insertQuery, [votingTheme, option1, option2, option3, option4, option5], function(err, result){
-    if(err){
-      console.log('[insertQuery错误]'+ err);
-      res.json({"message":"错误"});
-      console.log(req.body);
-    } else {
-      res.json({"message":"成功发起投票"})
+  var votingDescription = req.body.votingDescription;
+  var options = req.body.options;
+  var username = req.session.username;
+  console.log(req.body);
+  // 构建插入投票主题的 SQL 查询语句
+  var insertVotingThemeQuery = 'INSERT INTO Polls (title, description, username) VALUES (?, ?, ?)';
+
+  // 构建插入选项的 SQL 查询语句
+  var insertOptionsQuery = 'INSERT INTO Options (poll_id, text) VALUES (?, ?)';
+
+  // 开始数据库事务
+  connection.beginTransaction(function(err) {
+    if (err) {
+      console.log('[beginTransaction错误] ' + err);
+      res.json({ "message": "错误" });
+      return;
     }
-  })
-})
+
+    // 插入投票主题
+    connection.query(insertVotingThemeQuery, [votingTheme, votingDescription, username], function(err, result) {
+      if (err) {
+        console.log('[insertVotingThemeQuery错误] ' + err);
+        connection.rollback(function() {
+          res.json({ "message": "错误" });
+        });
+        return;
+      }
+
+      var pollId = result.insertId; // 获取插入的投票主题的ID
+      console.log(pollId);
+
+      // 构建选项数据
+      var optionData = [];
+      for (var i = 0; i < options.length; i++) {
+        optionData.push([pollId, options[i]]);
+      }
+
+      // 插入选项
+      for (var i = 0; i < options.length; i++) {
+        var option = options[i];
+        connection.query(insertOptionsQuery, [pollId, option], function(err, result) {
+          if (err) {
+            console.log('[insertOptionsQuery错误] ' + err);
+            connection.rollback(function() {
+              res.json({ "message": "错误" });
+            });
+            return;
+          }
+        });
+      }
+
+        // 提交数据库事务
+        connection.commit(function(err) {
+          if (err) {
+            console.log('[commit错误] ' + err);
+            connection.rollback(function() {
+              res.json({ "message": "错误" });
+            });
+            return;
+          }
+
+          res.json({ "message": "成功发起投票" });
+        });
+      });
+    });
+  });
+
+
+
 // 发帖
 app.post('/addPost', function(req, res){
   var post_subject = req.body.post_subject;
@@ -371,6 +424,83 @@ app.post('/addreply', requireLogin, function(req, res){
   });
   
 })
+// 路由：加载更多投票
+app.get('/load-more-votings', (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 5; // 每次加载的投票数量
+  const offset = (page - 1)*pageSize;
+  const countQuery = 'SELECT COUNT(*) AS total FROM polls'
+
+  // 执行查询
+  const query = 'SELECT * FROM polls LIMIT ? OFFSET ?';
+  connection.query(countQuery,(error, pageresults)=>{
+    if (error) {
+      console.error('Error querying records count:', error);
+      return res.status(500).json({error:'An error occured while querying the records count.'})
+    }
+
+    const totalRecords = pageresults[0].total;
+    const totalPages = Math.ceil(totalRecords/pageSize);
+
+    connection.query(query, [pageSize, offset], (err, results) => {
+      if (err) {
+        // 处理错误
+        res.status(500).json({ error: 'An error occurred' });
+      } 
+      console.log(results)
+      res.json({
+        totalPages: totalPages,
+        polls:results
+      });
+    });
+  })
+
+});
+
+// 路由：加载投票选项
+app.get('/load-option', (req, res) => {
+  const pollId = req.query.poll_id;
+  console.log(pollId)
+  // 执行选项查询
+  const query = `
+    SELECT * FROM options
+    WHERE poll_id = ?
+  `;
+  connection.query(query, [pollId], (err, results) => {
+    if (err) {
+      // 处理错误
+      res.status(500).json({ error: 'An error occurred' });
+    } else {
+      // 返回查询到的选项数据
+      res.json(results);
+    }
+  });
+});
+
+//投上一票
+app.post('/vote-option', (req, res) => {
+  const optionId = req.body.optionId;
+  console.log('正在查询的选项ID：' + optionId);
+  
+  const updateQuery = 'UPDATE options SET vote_count = vote_count + 1 WHERE id = ?';
+  connection.query(updateQuery, [optionId], (err, updateResult) => {
+    if (err) {
+      res.status(500).json({ error: 'An error occurred' });
+    } else {
+      console.log(updateResult);
+      const selectQuery = 'SELECT vote_count FROM options WHERE id = ?';
+      connection.query(selectQuery, [optionId], (err, selectResult) => {
+        if (err) {
+          res.status(500).json({ error: 'An error occurred' });
+        } else {
+          const voteCount = selectResult[0].vote_count;
+          res.json({ vote_count: voteCount });
+        }
+      });
+    }
+  });
+});
+
 // 监听端口
 app.listen(3001, function() {
     console.log('服务器已启动，运行在\\localhost:3001');

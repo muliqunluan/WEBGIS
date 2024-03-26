@@ -3,18 +3,18 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function(event) {
         event.preventDefault();
         var votingTheme = document.getElementById('votingTheme').value;
-        var option1 = document.getElementById('option1').value;
-        var option2 = document.getElementById('option2').value;
-        var option3 = document.getElementById('option3').value;
-        var option4 = document.getElementById('option4').value;
-        var option5 = document.getElementById('option5').value;
+        var votingDescription = document.getElementById('votingDescription').value;
+        var options = [];
+        $('.option-input').each(function() {
+            var optionValue = $(this).val().trim();
+            if (optionValue !== '') {
+              options.push(optionValue);
+            }
+          });
         var data = {
             votingTheme:votingTheme,
-            option1:option1,
-            option2:option2,
-            option3:option3,
-            option4:option4,
-            option5:option5
+            votingDescription:votingDescription,
+            options:options
         }
         fetch('/subVoting', {
             method:'POST',
