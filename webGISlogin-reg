@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var ejs = require('ejs');
 var app = express();
-
+const config = require('./config.js');
 app.set('view engine', 'ejs');
 
 // 配置会话
@@ -16,17 +16,17 @@ app.use(session({
 
 // 配置 body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
-localdir = "D:\\myweb\\webGIS"
+localdir = config.localdir
 
 // 配置静态文件目录
 app.use(express.static(localdir));
 
 // 创建数据库连接
 var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '12100',
-    database: 'webGISdatabase'
+    host: config.database.host,
+    user: config.database.user,
+    password: config.database.password,
+    database: config.database.database
 });
 
 // 连接数据库
@@ -61,7 +61,7 @@ app.post('/login', function(req, res) {
       }
     });
   });
-  
+// 注册路由
 app.post('/reg', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -178,21 +178,21 @@ function requireLogin(req, res, next) {
     res.redirect('/login.html'); // 重定向到登录页面
   }
 }
-
+// 如果用户直接进入主页 检查用户是否已经登录
 app.get('/main',requireLogin , function(req, res) {
   res.sendFile('main.html',{ root:localdir})
 })
-
+// 重定向到登录页面
 app.get('/', function(req, res) {
   res.redirect('/login.html');
 })
-
+// 退出登录
 app.get('/logout', function (req, res) {
   req.session.destroy(function () {
     res.redirect('/');
   });
 });
-
+// 搜索路由
 app.get('/search', function(req, res) {
   var word = req.query.word;
   var f_word = '%'+word+'%'
@@ -213,7 +213,7 @@ app.get('/search', function(req, res) {
     }
   })
 })
-
+// 邮箱路由
 app.get('/inbox', function(req, res) {
   var query = 'SELECT * FROM messages WHERE receiver LIKE ?';
   connection.query(query,[req.session.username], function(err, result){
@@ -502,8 +502,8 @@ app.post('/vote-option', (req, res) => {
 });
 
 // 监听端口
-app.listen(3001, function() {
-    console.log('服务器已启动，运行在\\localhost:3001');
+app.listen(config.port, function() {
+    console.log('服务器已启动，运行在\\'+config.host+':'+config.port);
   });
 
 
