@@ -84,5 +84,22 @@
       KEY `username` (`username`),
       CONSTRAINT `Polls_ibfk_1` FOREIGN KEY (`username`) REFERENCES `users` (`username`)
     )
+触发器，用于更新帖子回复数：
+
+    DELIMITER $$
+    CREATE TRIGGER update_reply_count
+    AFTER INSERT ON replies
+    FOR EACH ROW
+    BEGIN
+      UPDATE posts
+      SET reply_count = (
+        SELECT COUNT(*)
+        FROM replies
+        WHERE post_id = NEW.post_id
+      )
+      WHERE post_id = NEW.post_id;
+    END $$
+    DELIMITER ;
+    
 完善config.txt文件 。
 安装nodejs后，在项目文件夹里右键打开终端，输入 node .\webGISlogin-reg 即可运行。
