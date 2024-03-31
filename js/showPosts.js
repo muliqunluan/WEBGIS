@@ -2,9 +2,17 @@ $(document).ready(function() {
     var posts = $('#posts');
     var discuss_datas = $('#discuss-datas');
     var page = 1;
-  
-    function fetchPostsData(page) {
-      $.ajax('/post?page=' + page, {
+    sort = 'post_time';
+    $('#sortByTime').click(function(){
+      sort = 'post_time';
+      fetchPostsData(page,'post_time','desc');
+    });
+    $('#sortByLikes').click(function(){
+      sort = 'like_count';
+      fetchPostsData(page,'like_count','desc');
+    })
+    function fetchPostsData(page, sort, order) {
+      $.ajax('/post?page=' + page +'&sort=' + sort + '&order=' + order, {
         method: 'GET',
         success: function(data) {
           const totalPages = data.totalPages;
@@ -50,13 +58,14 @@ $(document).ready(function() {
     }
   
     // 初始加载第一页的数据
-    fetchPostsData(page);
+    fetchPostsData(page, 'post_time', 'asc');
   
     // 分页点击事件
     $(document).on('click', '.page-link', function(event) {
       event.preventDefault();
       page = parseInt($(this).data('page'));
-      fetchPostsData(page);
+      var order = 'desc';
+      fetchPostsData(page, sort, order);
     });
   
     function generatePaginationHTML(currentPage, totalPages) {

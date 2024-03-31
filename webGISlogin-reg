@@ -21,6 +21,10 @@ localdir = config.localdir
 // 配置静态文件目录
 app.use(express.static(localdir));
 
+// 使用body-parser中间件解析请求体
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 // 创建数据库连接
 var connection = mysql.createConnection({
     host: config.database.host,
@@ -55,7 +59,7 @@ app.post('/login', function(req, res) {
           console.log(req.session.username);
           res.redirect('/main')
         } else {
-          res.send('用户名或密码错误');
+          res.json({"message":"用户名或密码错误"})
           console.log(req.body);
         }
       }
@@ -63,6 +67,7 @@ app.post('/login', function(req, res) {
   });
 // 注册路由
 app.post('/reg', function(req, res) {
+    console.log(req)
     var username = req.body.username;
     var password = req.body.password;
   
@@ -76,7 +81,7 @@ app.post('/reg', function(req, res) {
         var count = result[0].count;
         if (count > 0) {
           // 存在相同的记录，注册失败
-          res.send('注册失败，账号已存在');
+          res.json({"message":"注册失败：用户已经存在"})
         } else {
           // 不存在相同的记录，插入新用户信息
           var insertQuery = 'INSERT INTO users (username, password) VALUES (?, ?)';
@@ -84,9 +89,9 @@ app.post('/reg', function(req, res) {
             if (err) {
               console.log('[错误]' + err);
               console.log(req.body)
-              res.send('注册失败');
+              res.send('<script>alert("注册失败")</script>');
             } else {
-              res.send('注册成功');
+              res.json({"message":"注册成功"})
             }
           });
         }
@@ -94,9 +99,7 @@ app.post('/reg', function(req, res) {
     });
   });
 
-// 使用body-parser中间件解析请求体
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+
 
 // 向数据库添加数据
 app.post('/data', function(req, res) {
@@ -235,8 +238,7 @@ app.post('/subVoting', function(req, res) {
   var votingTheme = req.body.votingTheme;
   var votingDescription = req.body.votingDescription;
   var options = req.body.options;
-  var username = req.session.username;
-  console.log(req.body);
+  var username = req.session.username;;
   // 构建插入投票主题的 SQL 查询语句
   var insertVotingThemeQuery = 'INSERT INTO Polls (title, description, username) VALUES (?, ?, ?)';
 
@@ -262,7 +264,6 @@ app.post('/subVoting', function(req, res) {
       }
 
       var pollId = result.insertId; // 获取插入的投票主题的ID
-      console.log(pollId);
 
       // 构建选项数据
       var optionData = [];
@@ -325,7 +326,16 @@ app.get('/post', (req, res) => {
   const pageSize = 20;
   const offset = (page - 1) * pageSize;
   const countQuery = 'SELECT COUNT(*) AS total FROM posts';
-  const query = 'SELECT * FROM posts LIMIT ? OFFSET ?';
+
+  let sortQuery = 'SELECT * FROM posts';
+  const sort = req.query.sort;
+  const order = req.query.order;
+
+  if (sort && order){
+    sortQuery += ' ORDER BY '+ sort + ' ' +order;
+  }
+
+  sortQuery += ' LIMIT ? OFFSET ?';
 
   connection.query(countQuery, (error, pageresults) => {
     if (error) {
@@ -336,7 +346,7 @@ app.get('/post', (req, res) => {
     const totalRecords = pageresults[0].total;
     const totalPages = Math.ceil(totalRecords / pageSize);
 
-    connection.query(query, [pageSize, offset], (error, postresults) => {
+    connection.query(sortQuery, [pageSize, offset], (error, postresults) => {
       if (error) {
         console.error('Error executing query:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -429,10 +439,10 @@ app.get('/load-more-votings', (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = 5; // 每次加载的投票数量
   const offset = (page - 1)*pageSize;
-  const countQuery = 'SELECT COUNT(*) AS total FROM polls'
+  const countQuery = 'SELECT COUNT(*) AS total FROM Polls'
 
   // 执行查询
-  const query = 'SELECT * FROM polls LIMIT ? OFFSET ?';
+  const query = 'SELECT * FROM Polls LIMIT ? OFFSET ?';
   connection.query(countQuery,(error, pageresults)=>{
     if (error) {
       console.error('Error querying records count:', error);
@@ -460,10 +470,9 @@ app.get('/load-more-votings', (req, res) => {
 // 路由：加载投票选项
 app.get('/load-option', (req, res) => {
   const pollId = req.query.poll_id;
-  console.log(pollId)
   // 执行选项查询
   const query = `
-    SELECT * FROM options
+    SELECT * FROM Options
     WHERE poll_id = ?
   `;
   connection.query(query, [pollId], (err, results) => {
@@ -480,15 +489,14 @@ app.get('/load-option', (req, res) => {
 //投上一票
 app.post('/vote-option', (req, res) => {
   const optionId = req.body.optionId;
-  console.log('正在查询的选项ID：' + optionId);
   
-  const updateQuery = 'UPDATE options SET vote_count = vote_count + 1 WHERE id = ?';
+  const updateQuery = 'UPDATE Options SET vote_count = IFNULL(vote_count, 0)+ 1 WHERE id = ?';
   connection.query(updateQuery, [optionId], (err, updateResult) => {
     if (err) {
       res.status(500).json({ error: 'An error occurred' });
     } else {
       console.log(updateResult);
-      const selectQuery = 'SELECT vote_count FROM options WHERE id = ?';
+      const selectQuery = 'SELECT vote_count FROM Options WHERE id = ?';
       connection.query(selectQuery, [optionId], (err, selectResult) => {
         if (err) {
           res.status(500).json({ error: 'An error occurred' });
@@ -503,7 +511,7 @@ app.post('/vote-option', (req, res) => {
 
 // 监听端口
 app.listen(config.port, function() {
-    console.log('服务器已启动，运行在\\'+config.host+':'+config.port);
+    console.log('服务器已启动，运行在\\'+config.database.host+':'+config.port);
   });
 
 

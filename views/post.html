@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= post.post_subjec%></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/layui.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <table class="table">
+        <thead>
+            <tr>
+              <th scope="col"><%=post.post_author%></th>
+              <th scope="col"><%=post.post_content%></th>
+            </tr>
+          </thead>
+      <tbody>
+        <tr>
+        <td style="width: 30%;">
+            <div class="layui-card">
+                <div class="layui-card-body"><strong style="color: black;">用户</strong></div>
+            </div>
+        </td>
+          <td style="width: 70%;">
+            <div class="layui-card">
+              <div class="layui-card-body">用户名</div>
+              <div class="layui-card-body">回复内容</div>
+              <div class="layui-card-body">时间</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<script src="layui.js"></script>
+<script src="bootstrap.min.js"></script>
+</body>
+</html>

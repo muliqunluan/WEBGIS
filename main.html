@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>湖科大树洞</title>
-  <link rel="stylesheet" href="node_modules/mescroll.js/mescroll.min.css">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="mainstyle.css">
   <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -20,7 +19,7 @@
         <li id="posts">
           发布帖子
         </li>
-        <li>/</li>
+        <li>&nbsp;/&nbsp;</li>
         <li id="hnkd">
           空间信息提交与查询
         </li>
@@ -152,6 +151,11 @@
       <a href="" class="btn btn-primary fixed-button" data-toggle="modal" data-target="#newPostModal"
         style="font-size: 16px;">[发布新帖子]</a>
       <div id="discuss-content">
+        <div id="sort">
+          <div id="sortByTime">按时间倒序排序&nbsp;/&nbsp;</div>
+          <div id="sortByLikes">按点赞数量排序</div>
+        </div>
+
         <table id="discuss-datas">
 
         </table>
@@ -197,8 +201,6 @@
           <button id="load-more-btn">加载更多</button>
         </div>
     </div>
-    <script src="node_modules/mescroll.js/mescroll.min.js"></script>
-    <script src="node_modules/mescroll.js/mescroll-option.js"></script>
     <!--<script src="js/amapSecurity.js"></script>-->
     <!--<script src="https://webapi.amap.com/loader.js"></script>-->
     <!--<script src="js/mapAPI.js"></script>-->

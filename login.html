@@ -4,47 +4,63 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
     <title>登录</title>
+
+    <style type="text/css">@import "css/main.css";</style>
 </head>
 
 <body>
-    <div class="modal" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: block;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="btn-info modal-header" style="background-color: #397fd7">
-                    <h4>用户登录</h4>
-                </div>
-                <div class="modal-body">
-                    <form class="form-horizontal loginForm" action="/login" method="post">
-                        <div class="form-group">
-                            <label class="col-sm-2 col-xs-3 control-label" for="userIdInput">用户名</label>
-                            <div class="col-sm-8 col-xs-8">
-                                <input type="text" class="form-control" id="userIdInput" name="username" placeholder="请输入用户名" required />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 col-xs-3 control-label" for="passwordInput">密码</label>
-                            <div class="col-sm-8 col-xs-8">
-                                <input type="password" class="form-control" id="passwordInput" name="password" placeholder="请输入密码"  required/>
-                            </div>
-                        </div>
-                        <button type="submit" id="hiddenSubmitBtn" style="display: none;"></button>
-                    </form>
-                </div>
-                <div class="modal-footer" style="display: flex;justify-content: center;">
-                    <button type="submit" class="btn btn-primary btn-block" id="externalSubmitBtn">登录</button>
-                    <button type="button" class="btn btn-secondary" onclick="location.href='./reg.html' ">注册</button>
+    <div class="main-container">
+        <!-- <div class="main-container-background">
+        </div> -->
+            <div class="login-container">
+                <div class="login-container-item">
+                    <div class="login-item noto">SIGN IN</div>
+                    <div class="login-item login-input">
+                        <div class="login-text">username</div>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="login-item login-input">
+                        <div class="login-text">password</div>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="login-item"><button id="login">OK</button></div>
+                    <div class="login-item"><button id="toReg" onclick="toReg()">前往注册</button></div>
                 </div>
             </div>
-        </div>
     </div>
+
 </body>
+<script src="js/jquery-3.7.1.js"></script>
 <script>
-    var externalSubmitBtn = document.getElementById('externalSubmitBtn');
-    var hiddenSubmitBtn = document.getElementById('hiddenSubmitBtn');
-    externalSubmitBtn.addEventListener('click', function() {
-        hiddenSubmitBtn.click();
-    });
+    $(document).ready(function(){
+        $("#login").click(function(event){
+            var username = $("#username").val();
+            var password = $("#password").val();
+            var data = {
+                username,
+                password
+            };
+            $.ajax('/login',{
+                method:'POST',
+                contentType: 'application/json',
+                data:JSON.stringify(data),
+                success:function(data) {
+                    if(data.message === "用户名或密码错误") {
+                        alert(data.message)
+                        
+                    }
+                    window.location.href = '/main';
+                    
+                },
+                error:function(error){
+                    console.log('Error', error);
+                }
+            })
+        })
+    })
+    function toReg() {
+        window.location.href = "/reg.html";
+    }
 </script>
 </html>

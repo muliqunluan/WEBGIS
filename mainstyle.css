@@ -155,3 +155,7 @@ textarea {
     bottom: 20px;
     right: 20px;
 }
+
+.dropdown {
+    list-style: none;
+}

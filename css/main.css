@@ -1,0 +1,162 @@
+.main-container{
+    width: 100vw;
+    height: 100vh;
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+    display: relative;
+    top: 0px;
+    left: 0px;
+}
+/* .main-container-background{
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: float;
+    -webkit-animation: sphereAnimation 100s infinite;
+    animation: sphereAnimation 100s infinite; 
+    animation: beezen 5s infinite linear;
+    background: linear-gradient(60deg,#76b2e4,#bd97e4,#e64c4c);
+    border-radius: 999px;
+    -webkit-filter: blur(12px);
+    filter: blur(12px);
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    z-index: -1;
+} */
+
+.login-container{
+    background-color: #fdf6e3;
+    margin: 20px 25% ;
+    min-width: 420px;
+    min-height: 400px;
+    position: absolute;
+    margin: auto;
+    width: 50%;
+    height: 50%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 5px solid #5c6a72;
+    border-radius: 20px;
+    box-shadow: 0 9px #2e3538;
+}
+
+.login-container-item{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+}
+
+.login-item{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    
+}
+
+.login-input{
+    max-height: 45px;
+    background-color: #efeadc;
+    padding: 2%;
+    border: 5px solid #cdc5b2;
+    border-radius: 8px;
+    /* box-shadow: 0 8px #999; */
+}
+
+
+.login-text{
+    align-self: center;
+    font-family: 'ui-rounded';
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+input{
+    margin-left: 3%;
+    padding: 20px 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #000000;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 7px;
+}
+
+input:focus{  
+    box-shadow: 0 -4px #999;
+    background-color: #edefed;
+    transition: all 0.5s ease;
+}
+
+
+button{
+  padding: 10px 25px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #3a94c5;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #1c4a62;
+}
+
+button:active {
+  background-color: #2991c8;
+  box-shadow: 0 5px #1c4a62;;
+  transform: translateY(4px);
+}
+
+
+@font-face {
+    font-family: noto;
+    src: url(../src/Ndot-55.otf);
+}
+
+.noto{
+    font-family:noto;
+    font-size: 80px;
+}
+
+.popup{
+    display: flex;
+    width: 100vw;
+    height: 0;
+    z-index: 99;
+    backdrop-filter: blur(80px);
+    transition: all 1s;
+    overflow: hidden;
+
+}
+
+.popup-container{
+    padding: 2%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: #fdf6e3;
+    margin: auto;
+    border: 5px solid #5c6a72;
+    border-radius: 20px;
+    box-shadow: 0 9px #2e3538;
+    min-width: 400px;
+    min-height: 400px;
+}
+
+.popup-item{
+    margin-left: auto;
+    margin-right: 4%;
+}
+

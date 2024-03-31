@@ -323,3 +323,11 @@ nav div ul li div {
         background-color: #094fb7;
         color:white;
     }
+
+    #sort {
+        display: flex;
+    }
+
+    #sort div {
+        cursor: pointer;
+    }
