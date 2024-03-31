@@ -57,6 +57,26 @@
       PRIMARY KEY (`id`),
       UNIQUE KEY `username` (`username`)
     )  
-    
+
+    CREATE TABLE `Options` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `poll_id` int DEFAULT NULL,
+      `text` varchar(255) DEFAULT NULL,
+      `vote_count` int DEFAULT NULL,
+      PRIMARY KEY (`id`),
+      KEY `poll_id` (`poll_id`)
+    )
+
+    CREATE TABLE `Polls` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `title` varchar(50) DEFAULT NULL,
+      `description` varchar(255) DEFAULT NULL,
+      `username` varchar(50) DEFAULT NULL,
+      `create_date` date DEFAULT NULL,
+      `deadline_date` date DEFAULT NULL,
+      PRIMARY KEY (`id`),
+      KEY `username` (`username`),
+      CONSTRAINT `Polls_ibfk_1` FOREIGN KEY (`username`) REFERENCES `users` (`username`)
+    )
 完善config.txt文件 。
 安装nodejs后，在项目文件夹里右键打开终端，输入 node .\webGISlogin-reg 即可运行。
