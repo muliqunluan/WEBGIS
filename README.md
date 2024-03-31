@@ -10,7 +10,8 @@
       `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (`id`)
     )  
-帖子表
+帖子表：
+
     CREATE TABLE `posts` (
       `post_id` int NOT NULL AUTO_INCREMENT,
       `post_subject` varchar(255) NOT NULL,
@@ -22,7 +23,8 @@
       `post_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (`post_id`)
     )  
-回复表
+回复表：
+
     CREATE TABLE `replies` (
       `reply_id` int NOT NULL AUTO_INCREMENT,
       `post_id` int DEFAULT NULL,
@@ -38,7 +40,8 @@
       CONSTRAINT `replies_ibfk_2` FOREIGN KEY (`username`) REFERENCES `users` (`username`),
       CONSTRAINT `replies_ibfk_3` FOREIGN KEY (`parent_reply_id`) REFERENCES `replies` (`reply_id`)
     )  
-需求供应表
+需求供应表：
+
     CREATE TABLE `sdinfo` (
       `id` int NOT NULL AUTO_INCREMENT,
       `support` varchar(50) DEFAULT NULL,
@@ -49,7 +52,8 @@
       `lat` float DEFAULT NULL,
       PRIMARY KEY (`id`)
     )  
-用户表
+用户表：
+
     CREATE TABLE `users` (
       `id` int NOT NULL AUTO_INCREMENT,
       `username` varchar(50) NOT NULL,
@@ -57,7 +61,8 @@
       PRIMARY KEY (`id`),
       UNIQUE KEY `username` (`username`)
     )  
-选项表
+选项表：
+
     CREATE TABLE `Options` (
       `id` int NOT NULL AUTO_INCREMENT,
       `poll_id` int DEFAULT NULL,
@@ -66,7 +71,8 @@
       PRIMARY KEY (`id`),
       KEY `poll_id` (`poll_id`)
     )
-投票主题表
+投票主题表：
+
     CREATE TABLE `Polls` (
       `id` int NOT NULL AUTO_INCREMENT,
       `title` varchar(50) DEFAULT NULL,
