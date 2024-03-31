@@ -1,8 +1,6 @@
 # webGIS
 简单的发帖回帖网站
-需要安装nodejs、mysql  
-设置你在mysql里的用户名称和密码  
-在mysql中创建webGISdatabase数据库，并创建以下表：  
+在mysql中创建数据库，并创建以下表：  
 
     CREATE TABLE `messages` (
       `id` int NOT NULL AUTO_INCREMENT,
@@ -60,7 +58,5 @@
       UNIQUE KEY `username` (`username`)
     )  
     
-请更改webGISlogin-reg中有关数据库连接的内容。
-安装nodejs后，在项目文件夹里右键打开终端，输入 node .\webGISlogin-reg 即可运行。然后在浏览器中打开  
-
-    localhost:3001
+完善config.txt文件 。
+安装nodejs后，在项目文件夹里右键打开终端，输入 node .\webGISlogin-reg 即可运行。

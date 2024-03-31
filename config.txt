@@ -8,4 +8,4 @@ module.exports = {
     localdir : "",
     port:
 }
-这里分别需要填写mysql数据库的host，用户名，密码，数据库名称，项目文件夹路径，nodejs的监听端口。最后将此文件的后缀名改为js。
+//这里分别需要填写mysql数据库的host，用户名，密码，数据库名称，项目文件夹路径，nodejs的监听端口。最后将此文件的后缀名改为js。
